@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { obtenerToken } from '../services/api.js'
 
+const emit = defineEmits(['sesion-iniciada'])
+
 const correo = ref('')
 const licencia = ref('')
 const mensaje = ref('')
@@ -9,17 +11,12 @@ const mensaje = ref('')
 async function iniciarSesion() {
   try {
     const respuesta = await obtenerToken(correo.value, licencia.value)
-    console.log(respuesta)
     localStorage.setItem('token', respuesta.token)
     mensaje.value = 'Sesión iniciada. Token guardado.'
+    emit('sesion-iniciada', respuesta.token)
   } catch (error) {
     mensaje.value = 'Error: ' + error.message
   }
-}
-
-function cerrarSesion() {
-  localStorage.removeItem('token')
-  mensaje.value = 'Sesión cerrada.'
 }
 </script>
 
@@ -35,8 +32,6 @@ function cerrarSesion() {
 
     <button type="submit">Obtener token</button>
   </form>
-
-  <button type="button" @click="cerrarSesion">Cerrar sesión</button>
 
   <p>{{ mensaje }}</p>
 </template>
